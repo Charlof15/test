@@ -1,0 +1,155 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    description: Arquetipo base ws Service
+  labels:
+    appgroup: ''
+  name: arquetipo-base-ws-service
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: arquetipo-base-ws-service
+  template:
+    metadata:
+      annotations:
+        metrics.alpha.kubernetes.io/custom-endpoints: '[{"api":"","path":"","port":"","names":""}]'
+      labels:
+        app: arquetipo-base-ws-service
+    spec:
+      containers:
+        - image: >-
+            swr.na-mexico-1.myhuaweicloud.com/amarello-dev/arquetipo-base-ws-service:latest
+          name: arquetipo-base-ws-service
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          env:
+            - name: PAAS_APP_NAME
+              value: ordentrabajoasignada-service
+            - name: PAAS_NAMESPACE
+              value: default
+            - name: PAAS_PROJECT_ID
+              value: 0a0d28aad180f59e2f8fc0138b32a19c
+            - name: BROKER-KAFKA
+              valueFrom:
+                configMapKeyRef:
+                  name: configmapffmenv
+                  key: broker-kafka
+            - name: HOST-APIGEE
+              valueFrom:
+                configMapKeyRef:
+                  name: configmapffmenv
+                  key: host-apigee
+            - name: HOST-KB-ENG
+              valueFrom:
+                configMapKeyRef:
+                  name: configmapffmenv
+                  key: host-kb-eng
+            - name: HOST-SOA-TP
+              valueFrom:
+                configMapKeyRef:
+                  name: configmapffmenv
+                  key: host-soa-tp
+            - name: AES-KEY-VALUES
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: aes-key-values
+            - name: URIS-DATA-BASE
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: uris-data-base
+            - name: USER-DATA-BASE
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: user-data-base
+            - name: PASS-DATA-BASE
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: pass-data-base
+            - name: JWTSEG-SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: jwtseg-secret
+            - name: USER-MONITOR
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: user-monitor
+            - name: PASS-MONITOR
+              valueFrom:
+                secretKeyRef:
+                  name: secretsffmenv
+                  key: pass-monitor
+          volumeMounts: []
+      imagePullSecrets:
+        - name: default-secret
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers: []
+        options:
+          - name: timeout
+            value: ''
+          - name: ndots
+            value: '5'
+          - name: single-request-reopen
+        searches: []
+      affinity: {}
+      tolerations:
+        - key: node.kubernetes.io/not-ready
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 300
+        - key: node.kubernetes.io/unreachable
+          operator: Exists
+          effect: NoExecute
+          tolerationSeconds: 300
+  replicas: 1
+  minReadySeconds: 0
+#  strategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxSurge: 0
+#      maxUnavailable: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: arquetipo-base-ws-service
+  labels:
+    app: arquetipo-base-ws-service
+  namespace: default
+  annotations:
+    kubernetes.io/elb.class: union
+    kubernetes.io/elb.id: 11dfc7a0-1602-4347-9c10-667d175250c5
+    kubernetes.io/elb.lb-algorithm: ROUND_ROBIN
+    kubernetes.io/elb.health-check-flag: 'off'
+spec:
+  selector:
+    app: arquetipo-base-ws-service
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: cce-service-0
+      targetPort: 8123
+      nodePort: 0
+      port: 8123
+      protocol: TCP
+  type: LoadBalancer
+  #============================= DEV
+  loadBalancerIP: 94.74.70.52
+  #============================= QA
+  #loadBalancerIP: 
+  #============================= PRODUCCION
+  #loadBalancerIP: 119.8.10.111

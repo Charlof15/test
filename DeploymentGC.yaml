@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arquetipo-base-ws-service
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: arquetipo-base-ws-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: arquetipo-base-ws-service
+    spec:
+      containers:
+      - name: arquetipo-base-ws-service
+        image: gcr.io/totalplay-ffm-core-dev/arquetipo-base-ws-service
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8123
+        resources:
+          requests:
+            cpu: 128m
+            memory: 250Mi
+          limits:
+            cpu: 250m
+            memory: 500Mi
+        env:
+          - name: BROKER-KAFKA
+            valueFrom:
+              configMapKeyRef:
+                name: configmapffmenv
+                key: broker-kafka
+          - name: HOST-APIGEE
+            valueFrom:
+              configMapKeyRef:
+                name: configmapffmenv
+                key: host-apigee
+          - name: HOST-KB-ENG
+            valueFrom:
+              configMapKeyRef:
+                name: configmapffmenv
+                key: host-kb-eng
+          - name: HOST-SOA-TP
+            valueFrom:
+              configMapKeyRef:
+                name: configmapffmenv
+                key: host-soa-tp
+          - name: AES-KEY-VALUES
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: aes-key-values
+          - name: URIS-DATA-BASE
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: uris-data-base
+          - name: USER-DATA-BASE
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: user-data-base
+          - name: PASS-DATA-BASE
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: pass-data-base
+          - name: JWTSEG-SECRET
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: jwtseg-secret
+          - name: USER-MONITOR
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: user-monitor
+          - name: PASS-MONITOR
+            valueFrom:
+              secretKeyRef:
+                name: secretsffmenv
+                key: pass-monitor
+      imagePullSecrets:
+        - name: default-secret
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: arquetipo-base-ws-service
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: arquetipo-base-ws-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target: 
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: arquetipo-base-ws-service
+  namespace: default
+spec:
+  type: LoadBalancer
+  #============================= DEV
+  loadBalancerIP: 34.94.124.52
+  #============================= QA
+  #loadBalancerIP: 34.102.125.80
+  #============================= PRODUCCION
+  #loadBalancerIP: 34.94.115.103
+  selector:
+    app: arquetipo-base-ws-service
+  ports:
+  - name: http
+    port: 8123
+    targetPort: 8123

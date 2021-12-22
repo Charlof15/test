@@ -1,0 +1,95 @@
+# =================== Manejo de base de datos =================================
+mybatis:
+  mapper-locations: classpath:static/mappers/*.xml
+spring:
+  application:
+    name: Nombre del microservicio
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+    schema: classpath:static/complements/InitTestTable.sql
+    username: 
+    password:
+  boot:
+   admin:
+     client:
+       url:
+       - ${HOST-KB-ENG}:8136
+       username: ${USER-MONITOR} 
+       password: ${PASS-MONITOR}   
+       instance:
+          service-base-url: ${HOST-KB-ENG}:${server.port}
+    
+# =================== KAFKA ==================================================== 
+  kafka:
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers:
+        - ${BROKER-KAFKA}
+      #properties: En caso de requerir configuraciones adicionales en cafka
+       # -
+    consumer:
+      group-id: group
+      enable-auto-commit: true
+      auto-commit-interval: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      bootstrap-servers: 
+      - ${BROKER-KAFKA}
+      #properties: En caso de requerir configuraciones adicionales en cafka
+       # -
+
+# =================== Configuracion del microservicio ===========================
+server:
+  port: 8080  
+  servlet:
+    context-path: /nombre/que/tendra/el/api
+
+
+#==================== Configuración de logs ======================================
+logging:
+  level:
+    root: ${LOG-LEVEL}
+  file:
+    name: logmicroservico.log
+    max-history: ${LOG-NUM_FILES}
+    max-size: ${LOG-TAMA-LOG}
+    
+#==================== Configuración de monitoreo =================================
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  
+# =================== Autentiocacion y Deserealizacion del JWT =================== 
+seguridad:
+  jwt:
+    header: Authorization
+    prefix: Bearer
+    detail: authorities3
+    secret: ${JWTSEG-SECRET}
+    
+# =================== Documentación OpenAPI 3.0 =================================== 
+ffm:
+  api:
+    title: Arquetipo FFM Back -> WS
+    version: V 1.0
+    description: >-
+      Plasma las capas en las que se divide la funcionaalidad de las apis
+      y se muestra un ejemplo de estructura y anotaciones necesarias para
+      la documentacion, asi mismo ya cuenta con seguridad integrada y la
+      deserealizacion del JWT se almacena en la clase Variables del packete
+      component en el atributo detalleJWT
+  developer:
+    name: Gamaliel Aguilar
+    email: https://www.linkedin.com/in/gamaliel-aguilar-cer%C3%B3n-66729a15a/
+    url: 

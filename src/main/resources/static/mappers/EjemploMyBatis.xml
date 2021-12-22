@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.totalplay.cotizacion.mapper.PersonaMapper" >
+	
+	<select id="findAll" resultType="com.totalplay.cotizacion.dto.Persona">
+		SELECT id,nombre,edad,direccion FROM PERSONA
+	</select>
+	
+	<select id="findById" parameterType="Integer" resultType="com.totalplay.cotizacion.dto.Persona">
+		SELECT * FROM PERSONA WHERE ID=#{id}
+	</select>
+	
+	<update id="updatePersona" parameterType="com.totalplay.cotizacion.dto.Persona">
+		UPDATE PERSONA SET NOMBRE=#{nombre} WHERE ID=#{id}
+	</update>
+	
+	<delete id="deletePersona" parameterType="Integer">
+		DELETE FROM PERSONA WHERE ID = #{id}
+	</delete>
+	
+	<insert id="insertPersona" parameterType="com.totalplay.cotizacion.dto.Persona">
+		INSERT INTO PERSONA(NOMBRE,EDAD,DIRECCION) VALUES(#{nombre},#{edad},#{direccion})
+	</insert>
+    
+</mapper>

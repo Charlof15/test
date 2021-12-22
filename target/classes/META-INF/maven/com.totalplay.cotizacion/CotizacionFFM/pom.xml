@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.4</version> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.totalplay.cotizacion</groupId>
+	<artifactId>CotizacionFFM</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>CotizacionFFM</name>
+	<description>Arquetipo base para microservicios spring boot</description>
+	<properties>
+		<java.version>1.8</java.version>
+		<start-class>com.totalplay.cotizacion.ArqBackWsEjemplosApplication</start-class>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Base de datos temporal -->
+		<dependency>  
+			<groupId>com.h2database</groupId>  
+			<artifactId>h2</artifactId>  
+			<scope>runtime</scope>  
+		</dependency>  
+		<!-- Persistencia de datos -->
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+		<!-- Todo lo necesario para pruebas unitarias (Mockito,junit) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- OpenAPI -->
+		<dependency>
+		     <groupId>org.springdoc</groupId>
+		     <artifactId>springdoc-openapi-security</artifactId>
+		     <version>1.5.7</version>
+		  </dependency>
+		<dependency>
+		   <groupId>org.springdoc</groupId>
+		   <artifactId>springdoc-openapi-ui</artifactId>
+		   <version>1.5.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<!-- Seguridad -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt</artifactId>
+		    <version>0.9.1</version>
+		</dependency>
+		<!-- Dummy data -->
+		<dependency>
+		    <groupId>com.github.javafaker</groupId>
+		    <artifactId>javafaker</artifactId>
+		    <version>1.0.2</version>
+		</dependency>
+		<!-- Sonar -->
+		<dependency>
+			<groupId>org.sonarsource.scanner.maven</groupId>
+			<artifactId>sonar-maven-plugin</artifactId>
+			<version>3.2</version>
+		</dependency>
+		<!-- GSON -->
+		<dependency>
+		  <groupId>com.google.code.gson</groupId>
+		  <artifactId>gson</artifactId>
+		</dependency>
+		<!-- Cahce -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.totalplay.ffm</groupId>
+			  <artifactId>Utilerias</artifactId>
+			  <version>1.0</version> 
+		</dependency>
+		<!-- Monitoreo -->
+		<dependency>
+        	<groupId>de.codecentric</groupId>
+        	<artifactId>spring-boot-admin-starter-client</artifactId>
+        	<version>2.4.1</version>
+        </dependency>
+       	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>Nexus</id>
+			<url>http://10.216.48.83:30003/repository/BSS/</url>
+		</repository>
+	</repositories>
+	
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<sonar.projectKey>${project.groupId}:${project.artifactId}</sonar.projectKey>
+			</properties>
+		</profile>
+	</profiles>
+	
+	<build>
+		<plugins>
+			<plugin>
+    			<groupId>org.jacoco</groupId>
+    			<artifactId>jacoco-maven-plugin</artifactId>
+    			<version>0.7.9</version>
+    			<configuration>
+        			<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+        			<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+        			<output>file</output>
+        			<append>true</append>
+    			</configuration>
+    			<executions>
+        			<execution>
+            			<id>jacoco-initialize</id>
+            			<goals>
+                			<goal>prepare-agent</goal>
+            			</goals>
+            			<phase>test-compile</phase>
+        			</execution>
+        			<execution>
+            			<id>jacoco-site</id>
+            			<phase>verify</phase>
+            			<goals>
+                			<goal>report</goal>
+            			</goals>
+        			</execution>
+    			</executions>
+			</plugin>
+			<plugin>
+		        <groupId>org.springframework.boot</groupId>
+		        <artifactId>spring-boot-maven-plugin</artifactId>
+		    </plugin>
+		</plugins>
+	</build>
+</project>
